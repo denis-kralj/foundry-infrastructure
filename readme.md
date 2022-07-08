@@ -16,3 +16,14 @@ TODO: instruct on proper way to create `terraform.auto.tfvars`, maybe a sample f
 
 TODO: we still cannot SSH to the machine
 
+## continued
+
+as I was trying to find out why we couldn't connect to the foundry instance created, I navigated through some UI elements.
+decided to compare VPCs, went into each main routing table. there I noticed that the routing table from tf was missing an entry in routes
+that had the following config:
+Destination: 0.0.0.0/0
+Target: igw-0e7bb32b27e9df7a4
+Status: Active
+Propagated: No
+
+Adding this allowed the ssh connection to the machine. I need to formalize this now in tf code asdf asd
