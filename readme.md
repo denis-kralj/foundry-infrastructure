@@ -18,7 +18,7 @@ If you lose the state files, you would have to reimport the resources to terrafo
 If you want your terraform state to be persisted safely, learn about using [terraform backends](https://www.terraform.io/language/settings/backends).
 
 - TODO: instruct on proper way to create `terraform.auto.tfvars`, maybe a sample file
-- TODO: S3 bucket that is only accessible for auth users from VPC, deny any other
+- TODO: S3 bucket that is only accessible for auth users from VPC, deny any other (https://foundryvtt.com/article/aws-s3/)
 - TODO: user to be able to access the S3 bucket
 - TODO: user that can start and stop the EC2 instance at will
 - TODO: actual app setup (most likely not via TF)
