@@ -1,3 +1,8 @@
+## Foundry AWS instance instructions
+
+https://foundryvtt.wiki/en/setup/hosting/Self-Hosting-on-AWS
+https://foundryvtt.com/article/nginx/
+
 ## Getting started
 
 - authenticate to aws https://registry.terraform.io/providers/hashicorp/aws/latest/docs#authentication-and-configuration
@@ -12,18 +17,15 @@ If you lose the state files, you would have to reimport the resources to terrafo
 
 If you want your terraform state to be persisted safely, learn about using [terraform backends](https://www.terraform.io/language/settings/backends).
 
-TODO: instruct on proper way to create `terraform.auto.tfvars`, maybe a sample file
+- TODO: instruct on proper way to create `terraform.auto.tfvars`, maybe a sample file
+- TODO: S3 bucket that is only accessible for auth users from VPC, deny any other
+- TODO: user to be able to access the S3 bucket
+- TODO: user that can start and stop the EC2 instance at will
+- TODO: actual app setup (most likely not via TF)
 
-TODO: we still cannot SSH to the machine
+- https://en.wikipedia.org/wiki/Reserved_IP_addresses
+- https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc
+- https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/subnet
+- https://www.terraform.io/language/functions/cidrsubnet
 
-## continued
-
-as I was trying to find out why we couldn't connect to the foundry instance created, I navigated through some UI elements.
-decided to compare VPCs, went into each main routing table. there I noticed that the routing table from tf was missing an entry in routes
-that had the following config:
-Destination: 0.0.0.0/0
-Target: igw-0e7bb32b27e9df7a4
-Status: Active
-Propagated: No
-
-Adding this allowed the ssh connection to the machine. I need to formalize this now in tf code asdf asd
+- secure bucket setup https://aws.amazon.com/blogs/aws/new-vpc-endpoint-for-amazon-s3/

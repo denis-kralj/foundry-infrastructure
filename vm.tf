@@ -1,3 +1,5 @@
+# depends on main.tf
+
 variable "ami" {
   type = object({
     name                = string
@@ -37,7 +39,7 @@ resource "aws_key_pair" "admin" {
 
 resource "aws_network_interface" "foundry" {
   subnet_id       = aws_subnet.foundry.id
-  security_groups = [aws_security_group.foundry.id]
+  security_groups = [aws_vpc.main.default_security_group_id]
 
   tags = local.tags
 }
