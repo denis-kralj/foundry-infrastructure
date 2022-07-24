@@ -12,7 +12,3 @@ vm_instance = {
 network = {
   address_range = "10.10.10.0/24"
 }
-
-# TODO: consider auto generating this
-s3_namespace = "dkralj-sandbox"
-
