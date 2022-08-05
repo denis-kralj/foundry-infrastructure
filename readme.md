@@ -9,6 +9,8 @@ https://foundryvtt.com/article/nginx/
 
 The terraform.tf file assumes that the administrative account used in creating the infrastructure is named "default", adjust it as needed.
 
+We are not doing S3 bucket storage until private buckets are supported
+
 ## terraform state
 
 Currently, the project is using local state, more advanced use is out of scope.
@@ -18,14 +20,24 @@ If you lose the state files, you would have to reimport the resources to terrafo
 If you want your terraform state to be persisted safely, learn about using [terraform backends](https://www.terraform.io/language/settings/backends).
 
 - TODO: instruct on proper way to create `terraform.auto.tfvars`, maybe a sample file
-- TODO: S3 bucket that is only accessible for auth users from VPC, deny any other (https://foundryvtt.com/article/aws-s3/)
-- TODO: user to be able to access the S3 bucket
 - TODO: user that can start and stop the EC2 instance at will
 - TODO: actual app setup (most likely not via TF)
-
+- TODO: document rest of tf files
 - https://en.wikipedia.org/wiki/Reserved_IP_addresses
 - https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc
 - https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/subnet
 - https://www.terraform.io/language/functions/cidrsubnet
 
-- secure bucket setup https://aws.amazon.com/blogs/aws/new-vpc-endpoint-for-amazon-s3/
+I have a VPC that has an address range 10.10.10.0/24
+I have a subnet that is calculated like cidrsubnet(var.network.address_range, 2, 0)
+I have an internet gateway linked to the VPC
+I have a route mentioning the VPC and gateway, with a destination_cidr_block of 0.0.0.0/0
+
+
+
+Questions
+why is the default SG defined separately?
+
+Is "A default VPC comes with a public subnet in each Availability Zone" important? From https://docs.aws.amazon.com/vpc/latest/userguide/default-vpc.html
+
+can I somehow shorthand the network interface so it isn't defined so verbosely

@@ -6,28 +6,35 @@ variable "network" {
   })
 }
 
+# chunk of cloud to work in
 resource "aws_vpc" "main" {
   cidr_block = var.network.address_range
   tags       = local.tags
 }
 
+# subnet in our chunk to place the VM in
+resource "aws_subnet" "foundry" {
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = cidrsubnet(var.network.address_range, 2, 0)
+  tags                    = local.tags
+  map_public_ip_on_launch = true
+}
+
+# gateway for internet communication
 resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
   tags   = local.tags
 }
 
+# route adds entry to VPC main routing table linking the internet gateway
+# points all trafic with the destination_cidr_block (?)
 resource "aws_route" "default" {
   route_table_id         = aws_vpc.main.default_route_table_id
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = aws_internet_gateway.main.id
 }
 
-resource "aws_subnet" "foundry" {
-  vpc_id     = aws_vpc.main.id
-  cidr_block = cidrsubnet(var.network.address_range, 2, 0)
-  tags       = local.tags
-}
-
+# the main VPC's default security group
 resource "aws_default_security_group" "default" {
   vpc_id = aws_vpc.main.id
 
@@ -70,4 +77,12 @@ resource "aws_default_security_group" "default" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+}
+
+# links the subnet to the security group
+resource "aws_network_interface" "foundry" {
+  subnet_id       = aws_subnet.foundry.id
+  security_groups = [aws_default_security_group.default.id]
+
+  tags = local.tags
 }

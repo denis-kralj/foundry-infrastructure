@@ -1,4 +1,5 @@
-# depends on main.tf
+# depends on main.tf, network.tf
+
 
 variable "ami" {
   type = object({
@@ -35,20 +36,6 @@ resource "aws_key_pair" "admin" {
   key_name   = "admin-key"
   public_key = var.vm_instance.public_key
   tags       = local.tags
-}
-
-resource "aws_network_interface" "foundry" {
-  subnet_id       = aws_subnet.foundry.id
-  security_groups = [aws_vpc.main.default_security_group_id]
-
-  tags = local.tags
-}
-
-resource "aws_eip" "foundry" {
-  vpc               = true
-  network_interface = aws_network_interface.foundry.id
-  public_ipv4_pool  = "amazon"
-  tags              = local.tags
 }
 
 resource "aws_instance" "foundry-server" {
