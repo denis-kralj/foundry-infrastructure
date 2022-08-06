@@ -78,11 +78,3 @@ resource "aws_default_security_group" "default" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
-
-# links the subnet to the security group
-resource "aws_network_interface" "foundry" {
-  subnet_id       = aws_subnet.foundry.id
-  security_groups = [aws_default_security_group.default.id]
-
-  tags = local.tags
-}

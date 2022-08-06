@@ -1,5 +1,5 @@
 # outputs that terraform spits out after completion
 output "instance_ip" {
   description = "public IP assigned"
-  value       = module.foundry.instance_ip
+  value       = aws_instance.foundry-server.public_ip
 }

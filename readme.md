@@ -28,16 +28,6 @@ If you want your terraform state to be persisted safely, learn about using [terr
 - https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/subnet
 - https://www.terraform.io/language/functions/cidrsubnet
 
-I have a VPC that has an address range 10.10.10.0/24
-I have a subnet that is calculated like cidrsubnet(var.network.address_range, 2, 0)
-I have an internet gateway linked to the VPC
-I have a route mentioning the VPC and gateway, with a destination_cidr_block of 0.0.0.0/0
-
-
-
 Questions
-why is the default SG defined separately?
-
-Is "A default VPC comes with a public subnet in each Availability Zone" important? From https://docs.aws.amazon.com/vpc/latest/userguide/default-vpc.html
 
 can I somehow shorthand the network interface so it isn't defined so verbosely

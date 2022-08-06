@@ -1,6 +1,5 @@
 # depends on main.tf, network.tf
 
-
 variable "ami" {
   type = object({
     name                = string
@@ -16,39 +15,14 @@ variable "vm_instance" {
   })
 }
 
-data "aws_ami" "ubuntu" {
-  most_recent = true
+module "foundry" {
+  source = "./_vm"
 
-  filter {
-    name   = "name"
-    values = [var.ami.name]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = [var.ami.virtualization_type]
-  }
-
-  owners = [var.ami.owner]
-}
-
-resource "aws_key_pair" "admin" {
-  key_name   = "admin-key"
-  public_key = var.vm_instance.public_key
-  tags       = local.tags
-}
-
-resource "aws_instance" "foundry-server" {
-  ami           = data.aws_ami.ubuntu.id
-  instance_type = var.vm_instance.instance_type
-  key_name      = aws_key_pair.admin.key_name
-
-  network_interface {
-    network_interface_id = aws_network_interface.foundry.id
-    device_index         = 0
-  }
-
-  tags = local.tags
+  ami               = var.ami
+  vm_instance       = var.vm_instance
+  subnet_id         = aws_subnet.foundry.id
+  security_group_id = aws_default_security_group.default.id
+  tags              = local.tags
 }
 
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/network_interface
