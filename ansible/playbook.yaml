@@ -1,0 +1,16 @@
+- name: Setup node
+  hosts: foundry-server
+
+  tasks:
+  - name: Execute node package source setup script
+    ansible.builtin.shell: curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+  - name: Install node
+    become: yes
+    ansible.builtin.apt:
+      name: nodejs
+      state: latest
+  - name: Install pm2 with npm
+    become: yes
+    community.general.npm:
+      name: pm2
+      global: yes
