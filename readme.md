@@ -31,3 +31,7 @@ If you want your terraform state to be persisted safely, learn about using [terr
 Questions
 
 can I somehow shorthand the network interface so it isn't defined so verbosely
+
+## Ansible
+
+Using ansible to configure the terraform created resources in order to run foundry
