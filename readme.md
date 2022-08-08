@@ -35,3 +35,7 @@ can I somehow shorthand the network interface so it isn't defined so verbosely
 ## Ansible
 
 Using ansible to configure the terraform created resources in order to run foundry
+
+need to find out how to propagate the server ip address to ansible for use
+find out how to make the extraction process/transfer of the foundry files visible in ansible UI
+ansible assumes the foundry.zip archive to be present in ansible/files/
