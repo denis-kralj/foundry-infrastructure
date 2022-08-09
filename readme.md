@@ -39,3 +39,19 @@ Using ansible to configure the terraform created resources in order to run found
 need to find out how to propagate the server ip address to ansible for use
 find out how to make the extraction process/transfer of the foundry files visible in ansible UI
 ansible assumes the foundry.zip archive to be present in ansible/files/
+
+I'm not using certbot since it doesn't generate certs without domain names
+
+Steps to setup the foundry instance
+
+1. navigate to the `terraform/` directory
+1. ensure you have the rights and aws default account properly setup
+1. call `terraform init`
+1. call `terraform plan -out tfplan`
+1. call `terraform apply tfplan`
+1. wait for the infrastructure to spin up, note the IP address output
+1. navigate to the `ansible/` directory
+1. ensure that the supplied SSH key was correct and that you can in fact SSH to the new server
+1. update the foundry ip value in the inventory to the IP address of the server
+1. run `ansible-playbook -i inventory.ini playbook.yaml`
+1. navigate to the IP address, foundry should be up and running

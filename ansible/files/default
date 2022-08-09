@@ -1,6 +1,8 @@
 server {
-    # Listen on port 80 without SSL certificates
-    listen                  80;
+    # Listen on port 443 using SSL certificates
+    listen                  443 ssl;
+    ssl_certificate         "/home/ubuntu/cert.pem";
+    ssl_certificate_key     "/home/ubuntu/key.pem";
 
     # Sets the Max Upload size to 300 MB
     client_max_body_size 300M;
@@ -20,4 +22,11 @@ server {
         # Make sure to set your Foundry VTT port number
         proxy_pass http://localhost:30000;
     }
+}
+
+# Optional, but recommend. Redirects all HTTP requests to HTTPS for you
+server {
+    listen 80;
+    listen [::]:80;
+    return 301 https://$host$request_uri;
 }

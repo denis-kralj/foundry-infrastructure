@@ -1,6 +1,5 @@
 - name: Setup node with pm2 on startup
   hosts: foundry-server
-
   tasks:
   - name: Execute node package source setup script
     ansible.builtin.shell: curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
@@ -20,7 +19,6 @@
 
 - name: Extract foundry
   hosts: foundry-server
-
   tasks:
   - name: create foundry directory
     file:
@@ -30,6 +28,11 @@
     file:
       path: ~/foundryuserdata
       state: directory
+  - name: Install unzip
+    become: yes
+    ansible.builtin.apt:
+      name: unzip
+      state: latest
   - name: Extract foundry
     ansible.builtin.unarchive:
       src: foundry.zip
@@ -37,9 +40,38 @@
 
 - name: start foundry with pm2
   hosts: foundry-server
-
   tasks:
     - name: make pm2 start foundry as task
       ansible.builtin.shell: pm2 start "node /home/ubuntu/foundry/resources/app/main.js --dataPath=/home/ubuntu/foundryuserdata" --name foundry
     - name: save pm2 config to ensure restart on failure
       ansible.builtin.shell: pm2 save
+
+- name: Install nginx
+  hosts: foundry-server
+  tasks:
+  - name: Install nginx
+    become: yes
+    ansible.builtin.apt:
+      name: nginx
+      state: latest
+
+- name: generate self-signed SSL certificates
+  hosts: foundry-server
+  tasks:
+    - name: Generate with openssl
+      ansible.builtin.shell: openssl req -x509 -newkey rsa:4096 -nodes -out cert.pem -keyout key.pem -days 365 -subj "/C=WE/ST=Nowhere/L=Void/O=Dice rollers/OU=Implementation/CN="
+
+- name: Configure nginx as reverse proxy and start
+  hosts: foundry-server
+  tasks:
+  - name: Move config file to default location
+    become: yes
+    ansible.builtin.copy:
+      src: default
+      dest: /etc/nginx/sites-available/default
+      owner: ubuntu
+  - name: start nginx
+    become: yes
+    service:
+        name: nginx
+        state: restarted
