@@ -20,9 +20,9 @@ If you lose the state files, you would have to reimport the resources to terrafo
 If you want your terraform state to be persisted safely, learn about using [terraform backends](https://www.terraform.io/language/settings/backends).
 
 - TODO: instruct on proper way to create `terraform.auto.tfvars`, maybe a sample file
-- TODO: user that can start and stop the EC2 instance at will
-- TODO: actual app setup (most likely not via TF)
 - TODO: document rest of tf files
+- TODO: create a swap file
+
 - https://en.wikipedia.org/wiki/Reserved_IP_addresses
 - https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc
 - https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/subnet
@@ -52,6 +52,6 @@ Steps to setup the foundry instance
 1. wait for the infrastructure to spin up, note the IP address output
 1. navigate to the `ansible/` directory
 1. ensure that the supplied SSH key was correct and that you can in fact SSH to the new server
-1. update the foundry ip value in the inventory to the IP address of the server
+1. update the foundry ip value in `inventory.ini` to the IP address of the server
 1. run `ansible-playbook -i inventory.ini playbook.yaml`
-1. navigate to the IP address, foundry should be up and running
+1. navigate to the IP address, foundry should be up and running on HTTPS (accept the risk with the unknown cert)

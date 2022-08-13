@@ -1,0 +1,16 @@
+{
+    "port": 30000,
+    "proxyPort": 443,
+    "proxySSL": true,
+    "upnp": true,
+    "fullscreen": false,
+    "dataPath": "/home/ubuntu/foundryuserdata",
+    "updateChannel": "release",
+    "language": "en.core",
+    "compressStatic": true,
+    "isElectron": false,
+    "isNode": true,
+    "isSSL": false,
+    "noupdate": false,
+    "noIPDiscovery": false
+}
