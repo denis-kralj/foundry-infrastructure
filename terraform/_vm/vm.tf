@@ -1,5 +1,3 @@
-# depends on main.tf, network.tf
-
 variable "ami" {
   type = object({
     name                = string
@@ -71,6 +69,3 @@ resource "aws_instance" "foundry-server" {
   tags = var.tags
 }
 
-# https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/network_interface
-
-# https://docs.aws.amazon.com/cli/latest/reference/ec2/allocate-address.html#examples
