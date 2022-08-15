@@ -24,7 +24,3 @@ module "foundry" {
   security_group_id = aws_default_security_group.default.id
   tags              = local.tags
 }
-
-# https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/network_interface
-
-# https://docs.aws.amazon.com/cli/latest/reference/ec2/allocate-address.html#examples
