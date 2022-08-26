@@ -49,9 +49,11 @@ Steps to setup the foundry instance
 1. call `terraform init`
 1. call `terraform plan -out tfplan`
 1. call `terraform apply tfplan`
-1. wait for the infrastructure to spin up, note the IP address output
 1. navigate to the `ansible/` directory
 1. ensure that the supplied SSH key was correct and that you can in fact SSH to the new server
-1. update the foundry ip value in `inventory.ini` to the IP address of the server
 1. run `ansible-playbook -i inventory.ini playbook.yaml`
 1. navigate to the IP address, foundry should be up and running on HTTPS (accept the risk with the unknown cert)
+
+
+# generate inventory file with terraform
+wtf is state parameter in modules and why should I "mention" it

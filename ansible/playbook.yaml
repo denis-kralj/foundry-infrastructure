@@ -6,7 +6,7 @@
     shell: curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
 
   - name: Update and upgrade apt packages
-    become: true
+    become: yes
     apt:
       upgrade: yes
       update_cache: yes
@@ -79,3 +79,7 @@
     service:
         name: nginx
         state: restarted
+
+  - name: Link to foundry
+    debug:
+      msg: "https://{{ ansible_ssh_host }}/"

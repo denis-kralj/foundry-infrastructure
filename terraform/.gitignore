@@ -1,5 +1,6 @@
 .terraform/
 tfplan
 terraform.auto.tfvars
+.terraform.tfstate.lock.info
 *.tfstate
 *.tfstate.backup
