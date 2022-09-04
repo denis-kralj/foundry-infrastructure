@@ -45,14 +45,22 @@
       path: ~/foundryuserdata/Config
       state: directory
 
-
   - name: Extract foundry
     unarchive:
       src: foundry.zip
       dest: ~/foundry/
 
-  - name: Generate with self signed SSL cert and key
-    shell: openssl req -x509 -newkey rsa:4096 -nodes -out cert.pem -keyout key.pem -days 365 -subj "/C=WE/ST=Nowhere/L=Void/O=Dice rollers/OU=Implementation/CN="
+  - name: Copy SSL certificate data
+    become: yes
+    copy:
+      src: cert.pem
+      dest: /home/ubuntu/cert.pem
+  
+  - name: Copy SSL certificate data
+    become: yes
+    copy:
+      src: key.pem
+      dest: /home/ubuntu/key.pem
 
   - name: Configure nginx
     become: yes
