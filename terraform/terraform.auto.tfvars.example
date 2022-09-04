@@ -6,7 +6,7 @@ ami = {
 
 vm_instance = {
   instance_type = "t2.micro"
-  public_key    = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGkHntfGUk0Nt4n13h2DCN84Yvesq1Vv4yUU7YpP+d0M denis-kralj@users.noreply.github.com"
+  public_key    = "<YOUR PUBLIC KEY HERE>"
 }
 
 network = {

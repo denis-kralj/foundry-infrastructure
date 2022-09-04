@@ -1,59 +1,50 @@
-## Foundry AWS instance instructions
+# FoundryVTT on AWS
 
-https://foundryvtt.wiki/en/setup/hosting/Self-Hosting-on-AWS
-https://foundryvtt.com/article/nginx/
+## Requirements
 
-## Getting started
+- [Terraform](https://www.terraform.io/)
+- [Ansible](https://www.ansible.com/)
 
-- authenticate to aws https://registry.terraform.io/providers/hashicorp/aws/latest/docs#authentication-and-configuration
+## Prerequisites
 
-The terraform.tf file assumes that the administrative account used in creating the infrastructure is named "default", adjust it as needed.
+This solution assumes that you have an AWS account setup on the executing machine that has rights to create and delete AWS resources named 'default'.
 
-We are not doing S3 bucket storage until private buckets are supported
+An example file named `terraform.auto.tfvars.example` contains all variables used for the infrastructure, adjust to your own needs.
 
-## terraform state
+Ansible requires several files to work:
+- a zip archive `foundry.zip` with the foundry release binary (this can be downloaded from the FoundryVTT website in the 'Purchased Software Licenses' page)
+- `cert.pem` and `key.pem` files that are used for SSL encryption of web traffic to the server
 
-Currently, the project is using local state, more advanced use is out of scope.
-This means that the state files describing the resources provisioned by terraform will be saved locally to the working directory.
-If you lose the state files, you would have to reimport the resources to terraform to be able to continue managing them with it.
+## Use
 
-If you want your terraform state to be persisted safely, learn about using [terraform backends](https://www.terraform.io/language/settings/backends).
+This repository allows the user to spin up infrastructure in order to host a private instance of FoundryVTT. The infrastructure created is free tier eligible.
 
-- TODO: instruct on proper way to create `terraform.auto.tfvars`, maybe a sample file
-- TODO: document rest of tf files
-- TODO: create a swap file
+Navigate to the `terraform/` directory and use the following commands:
 
-- https://en.wikipedia.org/wiki/Reserved_IP_addresses
-- https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc
-- https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/subnet
-- https://www.terraform.io/language/functions/cidrsubnet
+```bash
+terraform init
+terraform apply
 
-Questions
+# type in 'yes' when prompted
+```
 
-can I somehow shorthand the network interface so it isn't defined so verbosely
+The script generates an inventory file in the `ansible/` directory that should be used in the next step.
 
-## Ansible
+Navigate to the `ansible/` directory and use the following command:
 
-Using ansible to configure the terraform created resources in order to run foundry
+```bash
+ansible-playbook -i inventory.yaml playbook.yaml
+```
 
-need to find out how to propagate the server ip address to ansible for use
-find out how to make the extraction process/transfer of the foundry files visible in ansible UI
-ansible assumes the foundry.zip archive to be present in ansible/files/
+At the end of execution the command will give you an address to navigate to. From there setup the foundry instance as usual.
 
-I'm not using certbot since it doesn't generate certs without domain names
+When done, you can delete the infrastructure by simply destroying resources via terraform. Navigate to the `terraform/` directory and use the following commands:
 
-Steps to setup the foundry instance
+```bash
+terraform init
+terraform destroy
 
-1. navigate to the `terraform/` directory
-1. ensure you have the rights and aws default account properly setup
-1. call `terraform init`
-1. call `terraform plan -out tfplan`
-1. call `terraform apply tfplan`
-1. navigate to the `ansible/` directory
-1. ensure that the supplied SSH key was correct and that you can in fact SSH to the new server
-1. run `ansible-playbook -i inventory.ini playbook.yaml`
-1. navigate to the IP address, foundry should be up and running on HTTPS (accept the risk with the unknown cert)
+# type in 'yes' when prompted
+```
 
-
-# generate inventory file with terraform
-wtf is state parameter in modules and why should I "mention" it
+Note that if you need to use data across sessions, you will need to persist it outside of the infrastructure created, and copy it over to every new instance.
