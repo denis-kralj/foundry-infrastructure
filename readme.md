@@ -1,4 +1,4 @@
-# FoundryVTT on AWS
+# FoundryVTT on AWS + Gandi DNS record
 
 ## Requirements
 
@@ -7,13 +7,15 @@
 
 ## Prerequisites
 
-This solution assumes that you have an AWS account setup on the executing machine that has rights to create and delete AWS resources named 'default'.
+This solution assumes that you have an AWS account setup on the executing machine that has rights to create and delete AWS resources named 'default'. It also assumes use of gandi.net as a domain name provider that can have their DNS records updated to give a human readable URL to players for their use.
 
-An example file named `terraform.auto.tfvars.example` contains all variables used for the infrastructure, adjust to your own needs.
+An example file named `terraform.auto.tfvars.example` contains all variables used for the infrastructure, adjust to your own needs. These entries are required in either the auto.tfvars, entered in the interactive shell or as command line arguments in order for the system to work properly.
 
 Ansible requires several files to work:
 - a zip archive `foundry.zip` with the foundry release binary (this can be downloaded from the FoundryVTT website in the 'Purchased Software Licenses' page)
 - `cert.pem` and `key.pem` files that are used for SSL encryption of web traffic to the server
+
+This solution was tested with Foundry VTT v11 and is not guaranteed to work with other versions.
 
 ## Use
 
@@ -48,3 +50,9 @@ terraform destroy
 ```
 
 Note that if you need to use data across sessions, you will need to persist it outside of the infrastructure created, and copy it over to every new instance.
+
+## Backup/Restore
+The system also supports backing up and restoring your personal configuration and games. In order to back up your data, you need to navigate to the running instance, find the `foundryuserdata` directory and save all the content to your backup locations. If you include an archive in the `ansible/files/` directory with the name `foundryuserdata.tar.gz`, the ansible script will detect it and extract it to the correct location, allowing you to continue from where you left off.
+
+## Email notifications
+The system sets up a cloud watch monitor and sends an email to the configured address if the server is running for longer than 12h, to ensure that the spending on the server is minimal.

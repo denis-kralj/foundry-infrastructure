@@ -2,6 +2,12 @@
   hosts: foundry-server
 
   tasks:
+  - name: Check for backup data
+    delegate_to: localhost
+    stat:
+      path: files/foundryuserdata.tar.gz
+    register: user_data_backup
+
   - name: Setup node package source
     shell: curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
 
@@ -39,11 +45,29 @@
     file:
       path: ~/foundryuserdata
       state: directory
+    when: not user_data_backup.stat.exists
 
   - name: Create foundryuserdata/Config directory
     file:
       path: ~/foundryuserdata/Config
       state: directory
+    when: not user_data_backup.stat.exists
+
+  - name: Configure foundry VTT
+    become: yes
+    copy:
+      src: options.json
+      dest: /home/ubuntu/foundryuserdata/Config/options.json
+      owner: ubuntu
+    when: not user_data_backup.stat.exists
+
+  - name: Restore game backup if exists
+    become: yes
+    unarchive:
+      src: foundryuserdata.tar.gz
+      dest: /
+      owner: ubuntu
+    when: user_data_backup.stat.exists
 
   - name: Extract foundry
     unarchive:
@@ -69,13 +93,6 @@
       dest: /etc/nginx/sites-available/default
       owner: ubuntu
 
-  - name: Configure foundry VTT
-    become: yes
-    copy:
-      src: options.json
-      dest: /home/ubuntu/foundryuserdata/Config/options.json
-      owner: ubuntu
-
   - name: Add foundry to pm2 task list
     shell: pm2 start "node /home/ubuntu/foundry/resources/app/main.js --dataPath=/home/ubuntu/foundryuserdata" --name foundry
 
@@ -88,6 +105,28 @@
         name: nginx
         state: restarted
 
+  - name: Enter license
+    uri:
+        url: https://{{ ansible_ssh_host }}/license
+        method: POST
+        validate_certs: no
+        body_format: json
+        body:
+          action: enterKey
+          licenseKey: "{{ foundry_license }}"
+    when: not user_data_backup.stat.exists
+
+  - name: Accept terms and conditions
+    uri:
+        url: https://{{ ansible_ssh_host }}/license
+        method: POST
+        validate_certs: no
+        body_format: json
+        status_code: 302
+        body:
+          agree: on
+          accept:
+
   - name: Link to foundry
     debug:
-      msg: "https://{{ ansible_ssh_host }}/"
+      msg: "https://{{ url }}/"
