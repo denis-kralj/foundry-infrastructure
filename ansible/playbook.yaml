@@ -74,17 +74,29 @@
       src: foundry.zip
       dest: ~/foundry/
 
-  - name: Copy SSL certificate data
+  - name: Install certbot with snap
     become: yes
-    copy:
-      src: cert.pem
-      dest: /home/ubuntu/cert.pem
-  
-  - name: Copy SSL certificate data
+    community.general.snap:
+      name: certbot
+      classic: true
+
+  - name: Ensure certbot is able to be run
     become: yes
-    copy:
-      src: key.pem
-      dest: /home/ubuntu/key.pem
+    file:
+      src: /snap/bin/certbot
+      dest: /usr/bin/certbot
+      state: link
+
+  - name: Generate certificate via certbot
+    become: yes
+    shell: >
+      certbot certonly
+      -d {{ url }}
+      -m {{ email }}
+      --agree-tos
+      --nginx
+      --non-interactive
+      --keep-until-expiring
 
   - name: Configure nginx
     become: yes

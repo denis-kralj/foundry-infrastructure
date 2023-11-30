@@ -2,6 +2,10 @@ variable "license-key" {
   type = string
 }
 
+variable "certbot-supplied-email" {
+  type = string
+}
+
 resource "local_file" "ansible_inventory" {
     content  = <<EOT
 all:
@@ -15,6 +19,7 @@ all:
   vars:
     foundry_license: ${var.license-key}
     url: ${local.url}
+    email: ${var.certbot-supplied-email}
 
 EOT
     filename = "../ansible/inventory.yaml"

@@ -18,6 +18,8 @@ dns-record = {
   zone = "<YOUR DNS ZONE HERE>"
 }
 
+certbot-supplied-email = "<EMAIL TO GIVE TO CERTBOT TO SEND COMMUNICATION TO>"
+
 notification-email = "<EMAIL TO GET NOTIFICATIONS FOR LONG RUNNING SERVER>"
 
 license-key = "<YOUR FOUNDRY VTT LICENSE KEY HERE>"
