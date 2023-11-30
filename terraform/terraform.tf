@@ -3,7 +3,7 @@ terraform {
   required_providers {
     gandi = {
       version = "~> 2.0.0"
-      source   = "go-gandi/gandi"
+      source  = "go-gandi/gandi"
     }
   }
   required_version = "~> 1.1"
