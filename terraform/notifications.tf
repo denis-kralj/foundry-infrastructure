@@ -1,4 +1,4 @@
-variable "notification-email" {
+variable "notification_email" {
   type = string
 }
 
@@ -9,7 +9,7 @@ resource "aws_sns_topic" "server-uptime-topic" {
 resource "aws_sns_topic_subscription" "user_updates_sqs_target" {
   topic_arn = aws_sns_topic.server-uptime-topic.arn
   protocol  = "email"
-  endpoint  = var.notification-email
+  endpoint  = var.notification_email
 }
 
 resource "aws_cloudwatch_metric_alarm" "server-uptime-alarm" {

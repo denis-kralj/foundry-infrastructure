@@ -7,5 +7,5 @@ locals {
   tags = {
     Name = var.application
   }
-  url = "${var.dns-record.name}.${var.dns-record.zone}"
+  url = "${var.dns_record.name}.${var.dns_record.zone}"
 }

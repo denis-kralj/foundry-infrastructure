@@ -13,13 +13,13 @@ network = {
   address_range = "10.10.10.0/24"
 }
 
-dns-record = {
+dns_record = {
   name = "<YOUR DNS RECORD NAME HERE>"
   zone = "<YOUR DNS ZONE HERE>"
 }
 
-certbot-supplied-email = "<EMAIL TO GIVE TO CERTBOT TO SEND COMMUNICATION TO>"
+certbot_supplied_email = "<EMAIL TO GIVE TO CERTBOT TO SEND COMMUNICATION TO>"
 
-notification-email = "<EMAIL TO GET NOTIFICATIONS FOR LONG RUNNING SERVER>"
+notification_email = "<EMAIL TO GET NOTIFICATIONS FOR LONG RUNNING SERVER>"
 
-license-key = "<YOUR FOUNDRY VTT LICENSE KEY HERE>"
+license_key = "<YOUR FOUNDRY VTT LICENSE KEY HERE>"
