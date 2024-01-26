@@ -1,19 +1,20 @@
 # FoundryVTT on AWS + Gandi DNS record
 
-## Requirements
+## Software Requirements
 
 - [Terraform](https://www.terraform.io/)
 - [Ansible](https://www.ansible.com/)
 
+## Service requirements
+
+- [AWS account](https://aws.amazon.com/)
+- [gandi.net account](https://www.gandi.net/en)
+
 ## Prerequisites
 
-This solution assumes that you have an AWS account setup on the executing machine that has rights to create and delete AWS resources named 'default'. It also assumes use of gandi.net as a domain name provider that can have their DNS records updated to give a human readable URL to players for their use.
-
-An example file named `terraform.auto.tfvars.example` contains all variables used for the infrastructure, adjust to your own needs. These entries are required in either the auto.tfvars, entered in the interactive shell or as command line arguments in order for the system to work properly.
-
-Ansible requires several files to work:
-- a zip archive `foundry.zip` with the foundry release binary (this can be downloaded from the FoundryVTT website in the 'Purchased Software Licenses' page)
-- `cert.pem` and `key.pem` files that are used for SSL encryption of web traffic to the server
+1. The solution assumes that an AWS account named 'default' is configured on the local machine and has the proper rights to create the required resources.
+2. An example configuration file named `terraform.auto.tfvars.example` contains all variables required for the infrastructure.
+3. Ansible requires a zip archive `foundry.zip` with the foundry release binary (this can be downloaded from the [FoundryVTT website](https://foundryvtt.com/) in the 'Purchased Software Licenses' page).
 
 This solution was tested with Foundry VTT v11 and is not guaranteed to work with other versions.
 
@@ -21,6 +22,19 @@ This solution was tested with Foundry VTT v11 and is not guaranteed to work with
 
 This repository allows the user to spin up infrastructure in order to host a private instance of FoundryVTT. The infrastructure created is free tier eligible.
 
+Two scripts were provided for convenience, use them to bring the server up and down as needed:
+
+```shell
+# use this to bring up the server and set it up
+./spin-up.sh
+
+# use this to shut down the server once it is no longer needed
+./tear-down.sh
+```
+
+Note that these scripts assume all of the listed prerequisites above have been fulfilled.
+
+### Detailed spin up and teardown steps
 Navigate to the `terraform/` directory and use the following commands:
 
 ```bash
@@ -49,7 +63,7 @@ terraform destroy
 # type in 'yes' when prompted
 ```
 
-Note that if you need to use data across sessions, you will need to persist it outside of the infrastructure created, and copy it over to every new instance.
+Note that if you need to use data across sessions, you will need to persist it outside of the infrastructure created, and copy it over to every new instance. __*If you don't do this you will loose user data stored on the server*__
 
 ## Backup/Restore
 The system also supports backing up and restoring your personal configuration and games. In order to back up your data, you need to navigate to the running instance, find the `foundryuserdata` directory and save all the content to your backup locations. If you include an archive in the `ansible/files/` directory with the name `foundryuserdata.tar.gz`, the ansible script will detect it and extract it to the correct location, allowing you to continue from where you left off.

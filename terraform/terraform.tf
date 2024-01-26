@@ -1,3 +1,6 @@
+variable "gandi_key" {
+  type = string
+}
 # configures terraform for aws use on specific region with specific profile
 terraform {
   required_providers {
@@ -20,4 +23,5 @@ provider "aws" {
 }
 
 provider "gandi" {
+  key = var.gandi_key
 }
