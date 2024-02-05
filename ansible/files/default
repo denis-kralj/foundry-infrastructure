@@ -2,8 +2,8 @@ server {
     # Listen on port 443 using SSL certificates
     listen                  443 ssl;
 
-    ssl_certificate         "/etc/letsencrypt/live/dnd.kralj-web.com/fullchain.pem";
-    ssl_certificate_key     "/etc/letsencrypt/live/dnd.kralj-web.com/privkey.pem";
+    ssl_certificate         "/home/ubuntu/cert.pem";
+    ssl_certificate_key     "/home/ubuntu/key.pem";
 
     # Sets the Max Upload size to 300 MB
     client_max_body_size 300M;

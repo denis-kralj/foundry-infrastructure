@@ -41,7 +41,7 @@ Navigate to the `terraform/` directory and use the following commands:
 terraform init
 terraform apply
 
-# type in 'yes' when prompted
+# input all variables requested and type in 'yes' when prompted
 ```
 
 The script generates an inventory file in the `ansible/` directory that should be used in the next step.
@@ -49,6 +49,7 @@ The script generates an inventory file in the `ansible/` directory that should b
 Navigate to the `ansible/` directory and use the following command:
 
 ```bash
+# this command expects foundry.zip to be present (see prerequisites)
 ansible-playbook -i inventory.yaml playbook.yaml
 ```
 
@@ -60,7 +61,7 @@ When done, you can delete the infrastructure by simply destroying resources via 
 terraform init
 terraform destroy
 
-# type in 'yes' when prompted
+# you can set all variables to empty and type in 'yes' when prompted
 ```
 
 Note that if you need to use data across sessions, you will need to persist it outside of the infrastructure created, and copy it over to every new instance. __*If you don't do this you will loose user data stored on the server*__

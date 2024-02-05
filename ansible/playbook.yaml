@@ -8,6 +8,18 @@
       path: files/foundryuserdata.tar.gz
     register: user_data_backup
 
+  - name: Check for certificate chain data
+    delegate_to: localhost
+    stat:
+      path: files/cert.pem
+    register: user_data_certificate_chain
+
+  - name: Check for private key data
+    delegate_to: localhost
+    stat:
+      path: files/key.pem
+    register: user_data_private_key
+
   - name: Setup node package source
     shell: curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
 
@@ -74,11 +86,30 @@
       src: foundry.zip
       dest: ~/foundry/
 
+  - name: Copy certificate data
+    become: yes
+    copy:
+      src: cert.pem
+      dest: /home/ubuntu/cert.pem
+      owner: ubuntu
+    when: user_data_certificate_chain.stat.exists
+
+  - name: Copy private key data
+    become: yes
+    copy:
+      src: key.pem
+      dest: /home/ubuntu/key.pem
+      owner: ubuntu
+    when: user_data_private_key.stat.exists
+
   - name: Install certbot with snap
     become: yes
     community.general.snap:
       name: certbot
       classic: true
+    when:
+    - not user_data_certificate_chain.stat.exists
+    - not user_data_private_key.stat.exists
 
   - name: Ensure certbot is able to be run
     become: yes
@@ -86,6 +117,9 @@
       src: /snap/bin/certbot
       dest: /usr/bin/certbot
       state: link
+    when:
+    - not user_data_certificate_chain.stat.exists
+    - not user_data_private_key.stat.exists
 
   - name: Generate certificate via certbot
     become: yes
@@ -97,6 +131,29 @@
       --nginx
       --non-interactive
       --keep-until-expiring
+    when:
+    - not user_data_certificate_chain.stat.exists
+    - not user_data_private_key.stat.exists
+
+  - name: Copy certificate to expected location
+    become: yes
+    copy:
+      remote_src: true
+      src: /etc/letsencrypt/live/{{ url }}/fullchain.pem
+      dest: /home/ubuntu/cert.pem
+    when:
+    - not user_data_certificate_chain.stat.exists
+    - not user_data_private_key.stat.exists
+
+  - name: Copy private key to expected location
+    become: yes
+    copy:
+      remote_src: true
+      src: /etc/letsencrypt/live/{{ url }}/privkey.pem
+      dest: /home/ubuntu/key.pem
+    when:
+    - not user_data_certificate_chain.stat.exists
+    - not user_data_private_key.stat.exists
 
   - name: Configure nginx
     become: yes
