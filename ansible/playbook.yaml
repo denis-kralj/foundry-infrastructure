@@ -20,6 +20,14 @@
       path: files/key.pem
     register: user_data_private_key
 
+  - name: Check certificate age
+    delegate_to: localhost
+    community.crypto.x509_certificate_info:
+      path: files/cert.pem
+      valid_at:
+        month_from_now: +4w
+    register: cert_info
+
   - name: Setup node package source
     shell: curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
 
@@ -46,7 +54,7 @@
 
   - name: Add pm2 to startup
     become: yes
-    shell: env PATH=$PATH:/usr/bin /usr/lib/node_modules/pm2/bin/pm2 startup systemd -u ubuntu --hp /home/ubuntu
+    shell: env PATH=$PATH:/usr/bin /usr/lib/node_modules/pm2/bin/pm2 startup systemd -u {{ ansible_user }} --hp /home/{{ ansible_user }}
 
   - name: Create foundry directory
     file:
@@ -69,8 +77,8 @@
     become: yes
     copy:
       src: options.json
-      dest: /home/ubuntu/foundryuserdata/Config/options.json
-      owner: ubuntu
+      dest: /home/{{ ansible_user }}/foundryuserdata/Config/options.json
+      owner: "{{ ansible_user }}"
     when: not user_data_backup.stat.exists
 
   - name: Restore game backup if exists
@@ -78,7 +86,7 @@
     unarchive:
       src: foundryuserdata.tar.gz
       dest: /
-      owner: ubuntu
+      owner: "{{ ansible_user }}"
     when: user_data_backup.stat.exists
 
   - name: Extract foundry
@@ -90,26 +98,30 @@
     become: yes
     copy:
       src: cert.pem
-      dest: /home/ubuntu/cert.pem
-      owner: ubuntu
-    when: user_data_certificate_chain.stat.exists
+      dest: /home/{{ ansible_user }}/cert.pem
+      owner: "{{ ansible_user }}"
+    when:
+    - user_data_certificate_chain.stat.exists
+    - cert_info.valid_at.month_from_now
 
   - name: Copy private key data
     become: yes
     copy:
       src: key.pem
-      dest: /home/ubuntu/key.pem
-      owner: ubuntu
-    when: user_data_private_key.stat.exists
+      dest: /home/{{ ansible_user }}/key.pem
+      owner: "{{ ansible_user }}"
+    when:
+    - user_data_private_key.stat.exists
+    - cert_info.valid_at.month_from_now
 
   - name: Install certbot with snap
     become: yes
     community.general.snap:
       name: certbot
       classic: true
-    when:
-    - not user_data_certificate_chain.stat.exists
-    - not user_data_private_key.stat.exists
+    when: >
+      (not user_data_certificate_chain.stat.exists and not user_data_private_key.stat.exists) or
+      not cert_info.valid_at.month_from_now
 
   - name: Ensure certbot is able to be run
     become: yes
@@ -117,9 +129,9 @@
       src: /snap/bin/certbot
       dest: /usr/bin/certbot
       state: link
-    when:
-    - not user_data_certificate_chain.stat.exists
-    - not user_data_private_key.stat.exists
+    when: >
+      (not user_data_certificate_chain.stat.exists and not user_data_private_key.stat.exists) or
+      not cert_info.valid_at.month_from_now
 
   - name: Generate certificate via certbot
     become: yes
@@ -131,39 +143,39 @@
       --nginx
       --non-interactive
       --keep-until-expiring
-    when:
-    - not user_data_certificate_chain.stat.exists
-    - not user_data_private_key.stat.exists
+    when: >
+      (not user_data_certificate_chain.stat.exists and not user_data_private_key.stat.exists) or
+      not cert_info.valid_at.month_from_now
 
   - name: Copy certificate to expected location
     become: yes
     copy:
       remote_src: true
       src: /etc/letsencrypt/live/{{ url }}/fullchain.pem
-      dest: /home/ubuntu/cert.pem
-    when:
-    - not user_data_certificate_chain.stat.exists
-    - not user_data_private_key.stat.exists
+      dest: /home/{{ ansible_user }}/cert.pem
+    when: >
+      (not user_data_certificate_chain.stat.exists and not user_data_private_key.stat.exists) or
+      not cert_info.valid_at.month_from_now
 
   - name: Copy private key to expected location
     become: yes
     copy:
       remote_src: true
       src: /etc/letsencrypt/live/{{ url }}/privkey.pem
-      dest: /home/ubuntu/key.pem
-    when:
-    - not user_data_certificate_chain.stat.exists
-    - not user_data_private_key.stat.exists
+      dest: /home/{{ ansible_user }}/key.pem
+    when: >
+      (not user_data_certificate_chain.stat.exists and not user_data_private_key.stat.exists) or
+      not cert_info.valid_at.month_from_now
 
   - name: Configure nginx
     become: yes
     copy:
       src: default
       dest: /etc/nginx/sites-available/default
-      owner: ubuntu
+      owner: "{{ ansible_user }}"
 
   - name: Add foundry to pm2 task list
-    shell: pm2 start "node /home/ubuntu/foundry/resources/app/main.js --dataPath=/home/ubuntu/foundryuserdata" --name foundry
+    shell: pm2 start "node /home/{{ ansible_user }}/foundry/resources/app/main.js --dataPath=/home/{{ ansible_user }}/foundryuserdata" --name foundry
 
   - name: Save pm2 task list
     shell: pm2 save
@@ -198,4 +210,4 @@
 
   - name: Link to foundry
     debug:
-      msg: "https://{{ url }}/"
+      msg: https://{{ url }}/
